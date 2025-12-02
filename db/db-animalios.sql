@@ -124,18 +124,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `estado_pedido`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `estado_pedido` ;
-
-CREATE TABLE IF NOT EXISTS `estado_pedido` (
-  `id_estado_pedido` INT NOT NULL AUTO_INCREMENT,
-  `nombre_estado` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`id_estado_pedido`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `pedido`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `pedido` ;
@@ -153,11 +141,6 @@ CREATE TABLE IF NOT EXISTS `pedido` (
   CONSTRAINT `fk_pedido_usuario1`
     FOREIGN KEY (`id_usuario`)
     REFERENCES `usuario` (`id_usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_pedido_estado_pedido1`
-    FOREIGN KEY (`id_estado_pedido`)
-    REFERENCES `estado_pedido` (`id_estado_pedido`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -210,24 +193,7 @@ CREATE TABLE IF NOT EXISTS `historial_pedido` (
     FOREIGN KEY (`id_usuario`)
     REFERENCES `usuario` (`id_usuario`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_historial_pedido_estado_pedido1`
-    FOREIGN KEY (`id_estado_pedido`)
-    REFERENCES `estado_pedido` (`id_estado_pedido`)
-    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `estado_contacto`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `estado_contacto` ;
-
-CREATE TABLE IF NOT EXISTS `estado_contacto` (
-  `id_estado_contacto` INT NOT NULL AUTO_INCREMENT,
-  `nombre_estado` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_estado_contacto`))
 ENGINE = InnoDB;
 
 
@@ -249,36 +215,6 @@ CREATE TABLE IF NOT EXISTS `contacto` (
   `id_estado_contacto` INT NOT NULL,
   PRIMARY KEY (`id_contacto`),
   CONSTRAINT `fk_contacto_usuario1`
-    FOREIGN KEY (`id_usuario`)
-    REFERENCES `usuario` (`id_usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_contacto_estado_contacto1`
-    FOREIGN KEY (`id_estado_contacto`)
-    REFERENCES `estado_contacto` (`id_estado_contacto`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `respuesta_contacto`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `respuesta_contacto` ;
-
-CREATE TABLE IF NOT EXISTS `respuesta_contacto` (
-  `id_respuesta_contacto` INT NOT NULL AUTO_INCREMENT,
-  `id_contacto` INT NOT NULL,
-  `id_usuario` INT NOT NULL,
-  `fecha_respuesta` DATETIME NOT NULL,
-  `respuesta` TEXT NOT NULL,
-  PRIMARY KEY (`id_respuesta_contacto`),
-  CONSTRAINT `fk_respuesta_contacto_contacto1`
-    FOREIGN KEY (`id_contacto`)
-    REFERENCES `contacto` (`id_contacto`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_respuesta_contacto_usuario1`
     FOREIGN KEY (`id_usuario`)
     REFERENCES `usuario` (`id_usuario`)
     ON DELETE NO ACTION
