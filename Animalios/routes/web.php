@@ -10,6 +10,9 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+
 
 
 /*
@@ -69,4 +72,30 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
     Route::resource('productos', AdminProductController::class)
         ->names('admin.products')
         ->except(['show']);
+});
+
+
+Route::resource('usuarios', AdminUserController::class)
+    ->names('admin.users')
+    ->except(['show']);
+
+
+Route::get('/pedidos', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+Route::get('/pedidos/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+Route::post('/pedidos/{id}/estado', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.status');
+
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+Route::get('/registro', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/registro', [AuthController::class, 'register'])->name('register.post');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/perfil/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });
