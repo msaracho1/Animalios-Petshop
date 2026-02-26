@@ -7,12 +7,12 @@ final class RoleRepository extends BaseRepository
 {
     public function findByName(string $name): ?object
     {
-        $row = $this->fetchOne('SELECT * FROM rol WHERE nombre = :n LIMIT 1', ['n' => $name]);
+        $row = $this->fetchOne('SELECT * FROM rol WHERE nombre_rol = :n LIMIT 1', ['n' => $name]);
         return $row ? $this->obj($row) : null;
     }
 
     public function all(): array
     {
-        return $this->objs($this->fetchAll('SELECT * FROM rol ORDER BY nombre'));
+        return $this->objs($this->fetchAll('SELECT * FROM rol ORDER BY nombre_rol'));
     }
 }

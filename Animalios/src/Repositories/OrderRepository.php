@@ -7,14 +7,21 @@ use PDO;
 
 final class OrderRepository extends BaseRepository
 {
-    public function create(int $userId, string $fecha, float $total): int
-    {
-        $this->exec(
-            'INSERT INTO pedido (id_usuario, fecha, total) VALUES (:u,:f,:t)',
-            ['u'=>$userId, 'f'=>$fecha, 't'=>$total]
-        );
-        return $this->lastInsertId();
-    }
+public function create(int $userId, string $fecha, float $total): int
+{
+    $this->exec(
+        'INSERT INTO pedido (id_usuario, fecha_creacion, total, id_estado_pedido)
+         VALUES (:u, :f, :t, :e)',
+        [
+            'u' => $userId,
+            'f' => $fecha,
+            't' => $total,
+            'e' => 1, // En Preparación
+        ]
+    );
+
+    return $this->lastInsertId();
+}
 
     public function find(int $id): ?object
     {
@@ -24,7 +31,7 @@ final class OrderRepository extends BaseRepository
 
     public function listForUser(int $userId): array
     {
-        $orders = $this->objs($this->fetchAll('SELECT * FROM pedido WHERE id_usuario = :u ORDER BY fecha DESC', ['u'=>$userId]));
+        $orders = $this->objs($this->fetchAll('SELECT * FROM pedido WHERE id_usuario = :u ORDER BY fecha_creacion DESC', ['u'=>$userId]));
         // attach history
         $histRepo = new OrderHistoryRepository();
         foreach ($orders as $o) {
@@ -54,7 +61,7 @@ final class OrderRepository extends BaseRepository
         if (!empty($filters['dias'])) {
             $dias = (int)$filters['dias'];
             if ($dias > 0 && $dias <= 365) {
-                $where[] = 'p.fecha >= (NOW() - INTERVAL :dias DAY)';
+                $where[] = 'p.fecha_creacion >= (NOW() - INTERVAL :dias DAY)';
                 $params['dias'] = $dias;
             }
         }
@@ -72,7 +79,7 @@ final class OrderRepository extends BaseRepository
                 FROM pedido p
                 LEFT JOIN usuario u ON u.id_usuario = p.id_usuario
                 $whereSql
-                ORDER BY p.fecha DESC
+                ORDER BY p.fecha_creacion DESC
                 LIMIT :lim OFFSET :off";
 
         $st = $this->pdo()->prepare($sql);

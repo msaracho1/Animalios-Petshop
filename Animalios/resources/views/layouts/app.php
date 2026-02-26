@@ -14,7 +14,7 @@
 
 <?php
   $user = auth()->user();
-  $isAdmin = $user && isset($user->role) && (($user->role->nombre ?? null) === 'admin');
+  $isAdmin = $user && isset($user->role) && in_array(($user->role->nombre ?? null), ['admin', 'administrador'], true);
   $cart = \App\Core\Session::get('cart', []);
   $cartCount = 0;
   foreach ($cart as $it) { $cartCount += (int)($it['qty'] ?? 0); }
@@ -116,9 +116,18 @@
       <div class="flash flash--success"><?= htmlspecialchars((string)session('success'), ENT_QUOTES, 'UTF-8') ?></div>
     <?php endif; ?>
 
-    <?php if (session('error')): ?>
-      <div class="flash flash--error"><?= htmlspecialchars((string)session('error'), ENT_QUOTES, 'UTF-8') ?></div>
-    <?php endif; ?>
+<?php
+  $err = session('error');
+  if (is_array($err)) {
+      $err = implode(' · ', array_map('strval', $err));
+  }
+
+  $errText = trim((string)$err);
+?>
+
+<?php if ($errText !== ''): ?>
+  <div class="flash flash--error"><?= htmlspecialchars($errText, ENT_QUOTES, 'UTF-8') ?></div>
+<?php endif; ?>
 
     <?= $content ?? '' ?>
   </div>

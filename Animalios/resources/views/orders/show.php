@@ -13,7 +13,7 @@ ob_start();
 <div class="panel" style="margin-top:14px;">
   <div class="panel__body">
     <div style="display:flex; gap:18px; flex-wrap:wrap">
-      <div><strong>Fecha:</strong> <?= htmlspecialchars((string)$order->fecha, ENT_QUOTES, 'UTF-8') ?></div>
+      <div><strong>Fecha:</strong> <?= htmlspecialchars((string)$order->fecha_creacion, ENT_QUOTES, 'UTF-8') ?></div>
       <div><strong>Total:</strong> $ <?= number_format((float)$order->total, 2, ',', '.') ?></div>
     </div>
 
@@ -32,9 +32,9 @@ ob_start();
           <?php foreach ($order->items as $item): ?>
             <tr>
               <td><?= htmlspecialchars((string)($item->product->nombre ?? '—'), ENT_QUOTES, 'UTF-8') ?></td>
-              <td>$ <?= number_format((float)$item->precio, 2, ',', '.') ?></td>
+              <td>$ <?= number_format((float)$item->precio_unitario, 2, ',', '.') ?></td>
               <td><?= (int)$item->cantidad ?></td>
-              <td>$ <?= number_format((float)$item->precio * (int)$item->cantidad, 2, ',', '.') ?></td>
+              <td>$ <?= number_format((float)$item->precio_unitario * (int)$item->cantidad, 2, ',', '.') ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -44,7 +44,7 @@ ob_start();
     <h2 class="section-title" style="text-align:left; margin:18px 0 10px">Historial</h2>
     <ul style="margin:0; padding-left:18px;">
       <?php foreach ($order->history as $h): ?>
-        <li><?= htmlspecialchars((string)$h->fecha, ENT_QUOTES, 'UTF-8') ?> — <strong><?= htmlspecialchars((string)$h->estado, ENT_QUOTES, 'UTF-8') ?></strong></li>
+        <li><?= htmlspecialchars((string)$h->fecha_hora, ENT_QUOTES, 'UTF-8') ?> — <strong><?= htmlspecialchars((string)$h->estado, ENT_QUOTES, 'UTF-8') ?></strong></li>
       <?php endforeach; ?>
     </ul>
   </div>

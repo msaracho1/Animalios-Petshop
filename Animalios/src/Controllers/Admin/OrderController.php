@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
+use App\Core\Auth;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
@@ -49,8 +50,8 @@ final class OrderController
             echo 'Pedido no encontrado';
             return;
         }
-
-        (new OrderHistoryRepository())->create((int)$order->id_pedido, (string)$data['estado'], date('Y-m-d H:i:s'));
+        $user = Auth::userOrFail();
+        (new OrderHistoryRepository())->create((int)$order->id_pedido,(int)$user->id_usuario, $data['estado'], date('Y-m-d H:i:s'));
         Session::flash('success', 'Estado actualizado.');
         Response::redirect(route('admin.orders.show', ['id'=>$order->id_pedido]));
     }

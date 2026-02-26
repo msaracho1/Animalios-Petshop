@@ -35,7 +35,7 @@ $auth = function(Request $req) {
 
 $admin = function(Request $req) {
     $u = Auth::user();
-    if (!$u || (($u->role->nombre ?? null) !== 'admin')) {
+    if (!$u || (($u->role->nombre ?? null) !== 'administrador')) {
         http_response_code(403);
         echo '403 - Forbidden';
         exit;

@@ -10,7 +10,7 @@ final class UserRepository extends BaseRepository
     public function findWithRole(int $id): ?object
     {
         $row = $this->fetchOne(
-            'SELECT u.*, r.id_rol AS role_id_rol, r.nombre AS role_nombre
+            'SELECT u.*, r.id_rol AS role_id_rol, r.nombre_rol AS role_nombre
              FROM usuario u
              LEFT JOIN rol r ON r.id_rol = u.id_rol
              WHERE u.id_usuario = :id
@@ -75,7 +75,7 @@ final class UserRepository extends BaseRepository
     {
         $offset = max(0, ($page - 1) * $perPage);
 
-        $sql = 'SELECT u.*, r.nombre AS role_nombre, r.id_rol AS role_id_rol
+        $sql = 'SELECT u.*, r.nombre_rol AS role_nombre, r.id_rol AS role_id_rol
                 FROM usuario u
                 LEFT JOIN rol r ON r.id_rol = u.id_rol
                 ORDER BY u.id_usuario DESC

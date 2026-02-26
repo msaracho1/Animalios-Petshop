@@ -40,7 +40,7 @@ final class CheckoutController
                 $itemRepo->create($orderId, (int)$item['id_producto'], (int)$item['qty'], (float)$item['price']);
             }
 
-            (new OrderHistoryRepository())->create($orderId, 'Pendiente', $now);
+            (new OrderHistoryRepository())->create($orderId,(int)$user->id_usuario, 1, $now);
 
             Session::forget('cart');
             DB::commit();
@@ -50,8 +50,13 @@ final class CheckoutController
 
         } catch (\Throwable $e) {
             DB::rollBack();
-            Session::flash('error', 'Error al procesar el pedido.');
-            Response::redirect(route('cart.index'));
+
+            // DEBUG TEMPORAL
+            echo '<pre>';
+            echo $e->getMessage() . "\n\n";
+            echo $e->getTraceAsString();
+            echo '</pre>';
+            exit;
         }
     }
 }
