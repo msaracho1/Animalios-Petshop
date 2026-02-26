@@ -1,59 +1,163 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Animalios – Migración de Laravel a PHP Vanilla
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este proyecto es una versión **PHP vanilla (sin framework)** basada en tu proyecto Laravel `animalios`.
 
-## About Laravel
+## 1) Requisitos
+- PHP 8.1+ (ideal 8.2+)
+- MySQL/MariaDB
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 2) Configurar la base de datos
+En tu Laravel original no encontré migraciones con las tablas del dominio (producto/pedido/etc). El código asume estas tablas (por los modelos y consultas):
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- `rol(id_rol, nombre)`
+- `usuario(id_usuario, nombre, email, contraseña, id_rol)`
+- `marca(id_marca, nombre)`
+- `categoria(id_categoria, nombre)`
+- `subcategoria(id_subcategoria, nombre, id_categoria)`
+- `producto(id_producto, nombre, descripcion, precio, stock, id_marca, id_subcategoria)`
+- `pedido(id_pedido, id_usuario, fecha, total)`
+- `detalle_pedido(id_detalle, id_pedido, id_producto, cantidad, precio)`
+- `historial_pedido(id_historial, id_pedido, estado, fecha)`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### SQL sugerido (mínimo viable)
+> Ajustalo a tu DB real si ya la tenías.
 
-## Learning Laravel
+```sql
+CREATE TABLE rol (
+  id_rol INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(50) NOT NULL UNIQUE
+);
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+CREATE TABLE usuario (
+  id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  contraseña VARCHAR(45) NOT NULL,
+  id_rol INT NOT NULL,
+  FOREIGN KEY (id_rol) REFERENCES rol(id_rol)
+);
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+CREATE TABLE marca (
+  id_marca INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL
+);
 
-## Laravel Sponsors
+CREATE TABLE categoria (
+  id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL
+);
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+CREATE TABLE subcategoria (
+  id_subcategoria INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  id_categoria INT NOT NULL,
+  FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
+);
 
-### Premium Partners
+CREATE TABLE producto (
+  id_producto INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(255) NOT NULL,
+  descripcion TEXT NULL,
+  precio DECIMAL(10,2) NOT NULL,
+  stock INT NOT NULL DEFAULT 0,
+  id_marca INT NOT NULL,
+  id_subcategoria INT NOT NULL,
+  FOREIGN KEY (id_marca) REFERENCES marca(id_marca),
+  FOREIGN KEY (id_subcategoria) REFERENCES subcategoria(id_subcategoria)
+);
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+CREATE TABLE pedido (
+  id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+  id_usuario INT NOT NULL,
+  fecha DATETIME NOT NULL,
+  total DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+);
 
-## Contributing
+CREATE TABLE detalle_pedido (
+  id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+  id_pedido INT NOT NULL,
+  id_producto INT NOT NULL,
+  cantidad INT NOT NULL,
+  precio DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+  FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+CREATE TABLE historial_pedido (
+  id_historial INT AUTO_INCREMENT PRIMARY KEY,
+  id_pedido INT NOT NULL,
+  estado VARCHAR(50) NOT NULL,
+  fecha DATETIME NOT NULL,
+  FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido)
+);
 
-## Code of Conduct
+INSERT INTO rol(nombre) VALUES ('admin'),('cliente');
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 3) Configurar `.env`
+Editá `.env` y asegurate de tener:
+- `DB_CONNECTION=mysql`
+- `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
 
-## Security Vulnerabilities
+## 4) Levantar el proyecto
+Desde la carpeta del proyecto:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php -S localhost:8000 -t public
+```
 
-## License
+Abrí `http://localhost:8000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+# 5) Paso a paso: cómo “recrear” la migración
+
+La idea es mapear **conceptos Laravel → piezas vanilla**.
+
+## Paso A — Front controller
+En Laravel entra por `public/index.php` (y el kernel). En vanilla hacemos lo mismo:
+- `public/index.php` carga autoload, env, sesión, router y despacha.
+
+## Paso B — Router
+En Laravel tenías rutas en `routes/web.php`. En vanilla:
+- `src/Core/Router.php` registra rutas `GET/POST`.
+- Se agregan nombres (`->name('...')`) para poder usar `route('name')` en las vistas.
+
+## Paso C — Sesión, CSRF y Auth
+Laravel te daba:
+- `session()`, flash, middleware `auth`, `@csrf`, etc.
+
+Vanilla:
+- `src/Core/Session.php` maneja sesión + flash + token CSRF.
+- El router valida CSRF para `POST`.
+- `src/Core/Auth.php` guarda `user_id` en sesión y trae el usuario desde DB.
+
+## Paso D — “Modelos” (Eloquent) → Repositories
+En Laravel usabas Eloquent (`Product::with(...)->paginate(...)`).
+
+En vanilla reemplazamos por repositorios con SQL:
+- `src/Repositories/*Repository.php`
+- Se usan `JOIN` para traer `brand/subcategory/category`, etc.
+
+## Paso E — Controllers
+Copiamos la intención de tus controllers Laravel, pero:
+- validación: `Request->validate([...])`
+- DB: `DB::begin/commit/rollBack` en checkout
+- consultas: repositorios
+
+## Paso F — Views (Blade)
+Para no reescribir todo de cero, hay un mini-compiler “blade-lite”:
+- `src/Core/View.php` compila `*.blade.php` a `storage/cache`.
+- Soporta lo que usa tu proyecto: `@extends/@section/@yield`, `@if/@foreach`, `@auth`, `@csrf`, `{{ }}`, `@selected`.
+
+---
+
+# 6) Diferencias importantes vs Laravel
+- No hay `artisan`, ni service container, ni Eloquent.
+- La validación es mínima (suficiente para este proyecto).
+- Los controllers admin en tu repo original estaban “duplicados/vacíos” en `app/Http/Controllers/Admin/*` y los funcionales en `app/Http/Controllers/*.php` con namespace Admin. En vanilla dejé una sola versión en `src/Controllers/Admin/*`.
+
+---
+
+Si querés, el próximo paso es que me confirmes **tu esquema real de DB** (o me pases un dump `.sql`) y ajustamos queries/joins a tu estructura exacta.
