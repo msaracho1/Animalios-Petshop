@@ -27,11 +27,28 @@ final class UserRepository extends BaseRepository
         return $u;
     }
 
-    public function findByEmailAndPasswordSha1(string $email, string $plainPassword): ?object
+    public function findByEmailAndPassword(string $email, string $plainPassword): ?object
     {
-        $sha = sha1($plainPassword);
-        $row = $this->fetchOne('SELECT * FROM usuario WHERE email = :e AND contraseña = :p LIMIT 1', ['e' => $email, 'p' => $sha]);
-        return $row ? $this->obj($row) : null;
+        $row = $this->fetchOne('SELECT * FROM usuario WHERE email = :e LIMIT 1', ['e' => $email]);
+        if (!$row) {
+            return null;
+        }
+
+        $storedPassword = (string)($row['contraseña'] ?? '');
+        $isBcrypt = str_starts_with($storedPassword, '$2y$')
+            || str_starts_with($storedPassword, '$2b$')
+            || str_starts_with($storedPassword, '$2a$');
+
+        $valid = false;
+        if ($isBcrypt) {
+            $valid = password_verify($plainPassword, $storedPassword);
+        } else {
+            // Compatibilidad con contraseñas legacy en texto plano o SHA1.
+            $valid = hash_equals($storedPassword, $plainPassword)
+                || hash_equals($storedPassword, sha1($plainPassword));
+        }
+
+        return $valid ? $this->obj($row) : null;
     }
 
     public function emailExists(string $email, ?int $exceptId = null): bool

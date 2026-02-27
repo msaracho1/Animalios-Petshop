@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `fecha_alta` DATETIME NULL,
   `estado` TINYINT NULL,
   `email` VARCHAR(150) NOT NULL,
-  `contraseña` VARCHAR(45) NOT NULL,
+  `contraseña` VARCHAR(255) NOT NULL,
   `id_rol` INT NOT NULL,
   PRIMARY KEY (`id_usuario`),
   CONSTRAINT `fk_usuario_rol`

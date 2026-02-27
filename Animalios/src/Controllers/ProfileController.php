@@ -42,10 +42,10 @@ final class ProfileController
     {
         $user = Auth::userOrFail();
         $data = $req->validate([
-            'contraseña' => ['required','string','min:4','max:45'],
+            'contraseña' => ['required','string','min:4','max:255'],
         ]);
 
-        (new UserRepository())->update((int)$user->id_usuario, ['contraseña' => sha1($data['contraseña'])]);
+        (new UserRepository())->update((int)$user->id_usuario, ['contraseña' => password_hash($data['contraseña'], PASSWORD_BCRYPT)]);
         Session::flash('success', 'Contraseña actualizada.');
         Response::back();
     }

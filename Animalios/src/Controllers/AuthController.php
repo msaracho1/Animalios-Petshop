@@ -25,7 +25,7 @@ final class AuthController
             'contraseña' => ['required','string'],
         ]);
 
-        $user = (new UserRepository())->findByEmailAndPasswordSha1($data['email'], $data['contraseña']);
+        $user = (new UserRepository())->findByEmailAndPassword($data['email'], $data['contraseña']);
         if (!$user) {
             Session::flash('error', 'Credenciales inválidas.');
             Response::back();
@@ -51,7 +51,7 @@ final class AuthController
         $data = $req->validate([
             'nombre' => ['required','string','max:255'],
             'email' => ['required','email','max:255'],
-            'contraseña' => ['required','string','min:4','max:45'],
+            'contraseña' => ['required','string','min:4','max:255'],
         ]);
 
         $users = new UserRepository();
@@ -69,7 +69,7 @@ final class AuthController
         $id = $users->create([
             'nombre' => $data['nombre'],
             'email' => $data['email'],
-            'contraseña' => sha1($data['contraseña']),
+            'contraseña' => password_hash($data['contraseña'], PASSWORD_BCRYPT),
             'id_rol' => (int)$roleCliente->id_rol,
         ]);
 
