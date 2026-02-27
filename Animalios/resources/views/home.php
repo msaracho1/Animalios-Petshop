@@ -8,31 +8,69 @@ $pawSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/sv
 ob_start();
 ?>
 
-<section class="hero" aria-label="Promociones">
-  <div class="hero__inner">
-    <div>
-      <h1 class="hero__title">
-        <small>NATURAL</small>
-        BLACK SALE
-      </h1>
-      <p class="hero__subtitle">Descuentos en alimento y piedras sanitarias. Encontrá tu marca y aprovechá promos por tiempo limitado.</p>
+<?php
+$banners = [
+  '/animalios/public/assets/images/banner.png',
+  '/animalios/public/assets/images/marcas.png'
+];
 
-      <div class="hero__promo" aria-label="badges">
-        <span class="pill">HASTA 45% OFF</span>
-        <span class="pill">3×2</span>
-        <span class="pill">KILOS GRATIS</span>
-      </div>
+$bannerLinks = [
+  route('store.index')
+];
+?>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<section aria-label="Promociones" style="max-width:1200px; margin: 18px auto 10px; padding: 0 16px;">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <div id="heroCarousel"
+       class="carousel slide"
+       data-bs-ride="carousel"
+       data-bs-interval="4000">
 
-      <div style="margin-top:16px;">
-        <a class="btn btn--primary" href="<?= htmlspecialchars(route('store.index'), ENT_QUOTES, 'UTF-8') ?>">COMPRAR</a>
-      </div>
+    <div class="carousel-inner" style="border-radius:18px; overflow:hidden;">
+
+      <?php foreach ($banners as $i => $img): ?>
+        <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
+          <?php $href = $bannerLinks[$i] ?? null; ?>
+
+          <?php if ($href): ?>
+            <a href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>" style="display:block;">
+          <?php endif; ?>
+
+          <img src="<?= htmlspecialchars($img, ENT_QUOTES, 'UTF-8') ?>"
+               class="d-block w-100"
+               alt="Banner <?= $i + 1 ?>"
+               style="height: 320px; object-fit: cover;"
+               loading="lazy">
+
+          <?php if ($href): ?>
+            </a>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+
     </div>
 
-    <div class="hero__mock" aria-hidden="true">
-      <span>Promo visual / carrusel<br> (placeholder)</span>
-    </div>
+    <?php if (count($banners) > 1): ?>
+      <button class="carousel-control-prev"
+              type="button"
+              data-bs-target="#heroCarousel"
+              data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+
+      <button class="carousel-control-next"
+              type="button"
+              data-bs-target="#heroCarousel"
+              data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    <?php endif; ?>
+
   </div>
 </section>
+
 
 <h2 class="section-title">Productos más vendidos</h2>
 
@@ -44,13 +82,13 @@ ob_start();
       <div class="product">
         <a href="<?= htmlspecialchars(route('store.show', ['id' => $p->id_producto]), ENT_QUOTES, 'UTF-8') ?>">
           <div class="product__img"><?= $pawSvg ?></div>
-          <div class="product__name"><?= htmlspecialchars((string)$p->nombre, ENT_QUOTES, 'UTF-8') ?></div>
+          <div class="product__name"><?= htmlspecialchars((string)($p->nombre ?? ''), ENT_QUOTES, 'UTF-8') ?></div>
         </a>
-        <div class="product__price">$ <?= number_format((float)$p->precio, 2, ',', '.') ?></div>
+        <div class="product__price">$ <?= number_format((float)($p->precio ?? 0), 2, ',', '.') ?></div>
         <div class="product__actions">
           <form method="POST" action="<?= htmlspecialchars(route('cart.add'), ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
-            <input type="hidden" name="id_producto" value="<?= (int)$p->id_producto ?>">
+            <input type="hidden" name="id_producto" value="<?= (int)($p->id_producto ?? 0) ?>">
             <input type="hidden" name="cantidad" value="1">
             <button class="btn btn--sm" type="submit">Comprar</button>
           </form>
@@ -60,12 +98,23 @@ ob_start();
   </div>
 <?php endif; ?>
 
+
 <h2 class="section-title">Trabajamos con las mejores marcas</h2>
-<div class="brands">
-  <?php foreach (($brands ?? []) as $b): ?>
-    <div class="brandchip"><?= htmlspecialchars((string)$b->nombre, ENT_QUOTES, 'UTF-8') ?></div>
-  <?php endforeach; ?>
+
+<div style="max-width:1100px; margin:0 auto 24px; padding: 0 16px;">
+  <img src="/animalios/public/assets/images/marcas.png"
+       alt="Marcas"
+       style="width:100%; border-radius:18px;"
+       loading="lazy">
 </div>
+
+
+<section style="max-width:1200px; margin: 32px auto 0; padding: 0 16px;">
+  <img src="/animalios/public/assets/images/abajo.png"
+       alt="Banner adicional"
+       style="width:100%; border-radius:18px;"
+       loading="lazy">
+</section>
 
 <?php
 $content = ob_get_clean();
