@@ -44,7 +44,7 @@ ob_start();
           <select id="marca" name="id_marca" required>
             <?php foreach ($brands as $b): ?>
               <option value="<?= (int)$b->id_marca ?>" <?= ((int)$b->id_marca === (int)$product->id_marca) ? 'selected' : '' ?>>
-                <?= htmlspecialchars((string)$b->nombre, ENT_QUOTES, 'UTF-8') ?>
+                <?= htmlspecialchars((string)$b->nombre_marca, ENT_QUOTES, 'UTF-8') ?>
               </option>
             <?php endforeach; ?>
           </select>
@@ -54,7 +54,7 @@ ob_start();
           <select id="sub" name="id_subcategoria" required>
             <?php foreach ($subcategories as $s): ?>
               <option value="<?= (int)$s->id_subcategoria ?>" <?= ((int)$s->id_subcategoria === (int)$product->id_subcategoria) ? 'selected' : '' ?>>
-                <?= htmlspecialchars((string)$s->nombre, ENT_QUOTES, 'UTF-8') ?>
+                <?= htmlspecialchars((string)$s->nombre_subcategoria, ENT_QUOTES, 'UTF-8') ?>
               </option>
             <?php endforeach; ?>
           </select>

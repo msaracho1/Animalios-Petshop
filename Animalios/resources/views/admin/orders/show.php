@@ -18,32 +18,6 @@ ob_start();
       <div><strong>Total:</strong> $ <?= number_format((float)$order->total, 2, ',', '.') ?></div>
     </div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:end; justify-content:space-between;">
-      <div>
-        <div class="muted" style="font-weight:900; margin-bottom:6px;">Estado actual</div>
-        <div style="font-weight:900; font-size:14px;">
-          <?= htmlspecialchars((string)(($order->history[0]->estado ?? '—')), ENT_QUOTES, 'UTF-8') ?>
-        </div>
-      </div>
-
-      <form method="POST" action="<?= htmlspecialchars(route('admin.orders.status', ['id' => $order->id_pedido]), ENT_QUOTES, 'UTF-8') ?>" style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
-        <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Session::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
-        <div style="min-width:220px;">
-          <label for="estado">Cambiar estado</label>
-          <select id="estado" name="estado" required>
-            <?php
-              $states = ['pendiente','en_verificacion','preparando','enviado','recibido','cancelado'];
-              $curr = (string)(($order->history[0]->estado ?? ''));
-            ?>
-            <?php foreach ($states as $s): ?>
-              <option value="<?= htmlspecialchars($s, ENT_QUOTES, 'UTF-8') ?>" <?= ($curr === $s) ? 'selected' : '' ?>><?= htmlspecialchars(ucwords(str_replace('_',' ', $s)), ENT_QUOTES, 'UTF-8') ?></option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <button class="btn btn--primary" type="submit">Actualizar</button>
-      </form>
-    </div>
-
     <h2 class="section-title" style="text-align:left; margin:18px 0 10px">Detalle del pedido</h2>
     <div class="tablewrap">
       <table class="ui" aria-label="detalle">
@@ -71,8 +45,17 @@ ob_start();
     <h2 class="section-title" style="text-align:left; margin:18px 0 10px">Historial</h2>
     <ul style="margin:0; padding-left:18px;">
       <?php foreach ($order->history as $h): ?>
-        <li><?= htmlspecialchars((string)$h->fecha_hora, ENT_QUOTES, 'UTF-8') ?> — <strong><?= htmlspecialchars((string)$h->nombre_estado, ENT_QUOTES, 'UTF-8') ?></strong></li>
-      <?php endforeach; ?>
+<li>
+    <?= htmlspecialchars((string)($h->fecha_hora ?? ''), ENT_QUOTES, 'UTF-8') ?>
+    —
+    <strong>
+        <?= htmlspecialchars(
+            (string)($h->nombre_estado ?? $h->estado ?? $h->estado_id ?? 'Sin estado'),
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>
+    </strong>
+</li>      <?php endforeach; ?>
     </ul>
   </div>
 </div>

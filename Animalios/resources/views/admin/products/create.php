@@ -43,7 +43,7 @@ ob_start();
           <label for="marca">Marca</label>
           <select id="marca" name="id_marca" required>
             <?php foreach ($brands as $b): ?>
-              <option value="<?= (int)$b->id_marca ?>"><?= htmlspecialchars((string)$b->nombre, ENT_QUOTES, 'UTF-8') ?></option>
+              <option value="<?= (int)$b->id_marca ?>"><?= htmlspecialchars((string)$b->nombre_marca, ENT_QUOTES, 'UTF-8') ?></option>
             <?php endforeach; ?>
           </select>
         </div>
@@ -52,7 +52,7 @@ ob_start();
           <label for="sub">Subcategoría</label>
           <select id="sub" name="id_subcategoria" required>
             <?php foreach ($subcategories as $s): ?>
-              <option value="<?= (int)$s->id_subcategoria ?>"><?= htmlspecialchars((string)$s->nombre, ENT_QUOTES, 'UTF-8') ?></option>
+              <option value="<?= (int)$s->id_subcategoria ?>"><?= htmlspecialchars((string)$s->nombre_subcategoria, ENT_QUOTES, 'UTF-8') ?></option>
             <?php endforeach; ?>
           </select>
         </div>

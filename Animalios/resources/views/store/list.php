@@ -35,43 +35,6 @@ ob_start();
         <div class="filters__label">Buscar</div>
         <input type="text" name="q" placeholder="Buscar" value="<?= htmlspecialchars((string)($filters['q'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
       </div>
-
-      <div class="filters__group">
-        <div class="filters__label">Categoría</div>
-        <select name="id_categoria">
-          <option value="">Todas</option>
-          <?php foreach ($categories as $c): ?>
-            <option value="<?= (int)$c->id_categoria ?>" <?= ((string)($filters['id_categoria'] ?? '') === (string)$c->id_categoria) ? 'selected' : '' ?>>
-              <?= htmlspecialchars((string)$c->nombre, ENT_QUOTES, 'UTF-8') ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-
-      <div class="filters__group">
-        <div class="filters__label">Subcategoría</div>
-        <select name="id_subcategoria">
-          <option value="">Todas</option>
-          <?php foreach ($subcategories as $s): ?>
-            <option value="<?= (int)$s->id_subcategoria ?>" <?= ((string)($filters['id_subcategoria'] ?? '') === (string)$s->id_subcategoria) ? 'selected' : '' ?>>
-              <?= htmlspecialchars((string)$s->nombre, ENT_QUOTES, 'UTF-8') ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-
-      <div class="filters__group">
-        <div class="filters__label">Marca</div>
-        <select name="id_marca">
-          <option value="">Todas</option>
-          <?php foreach ($brands as $b): ?>
-            <option value="<?= (int)$b->id_marca ?>" <?= ((string)($filters['id_marca'] ?? '') === (string)$b->id_marca) ? 'selected' : '' ?>>
-              <?= htmlspecialchars((string)$b->nombre, ENT_QUOTES, 'UTF-8') ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-
       <div class="filters__actions">
         <button class="btn btn--sm btn--primary" type="submit">Filtrar</button>
         <a class="btn btn--sm" href="<?= htmlspecialchars(route('store.index'), ENT_QUOTES, 'UTF-8') ?>">Limpiar</a>
