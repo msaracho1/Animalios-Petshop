@@ -31,7 +31,7 @@ final class UserController
         $data = $req->validate([
             'nombre' => ['required','string','max:255'],
             'email' => ['required','email','max:255'],
-            'contraseña' => ['required','string','min:4','max:45'],
+            'contraseña' => ['required','string','min:4','max:255'],
             'id_rol' => ['required','integer'],
         ]);
 
@@ -41,7 +41,7 @@ final class UserController
             Response::back();
         }
 
-        $data['contraseña'] = sha1($data['contraseña']);
+        $data['contraseña'] = password_hash($data['contraseña'], PASSWORD_BCRYPT);
         $repo->create($data);
 
         Session::flash('success', 'Usuario creado.');
@@ -75,7 +75,7 @@ final class UserController
             'nombre' => ['required','string','max:255'],
             'email' => ['required','email','max:255'],
             'id_rol' => ['required','integer'],
-            'contraseña' => ['nullable','string','min:4','max:45'],
+            'contraseña' => ['nullable','string','min:4','max:255'],
         ]);
 
         if ($repo->emailExists($data['email'], $userId)) {
@@ -84,7 +84,7 @@ final class UserController
         }
 
         if (!empty($data['contraseña'])) {
-            $data['contraseña'] = sha1($data['contraseña']);
+            $data['contraseña'] = password_hash($data['contraseña'], PASSWORD_BCRYPT);
         } else {
             unset($data['contraseña']);
         }
